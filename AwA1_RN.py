@@ -71,15 +71,16 @@ def main():
     class_embedding = 'original_att'
 
     matcontent = sio.loadmat(dataroot + "/" + dataset + "/" + image_embedding + ".mat")
-    feature = matcontent['features'].T
-    label = matcontent['labels'].astype(int).squeeze() - 1
+    feature = matcontent['features'].T                                 ### [2048, 30475] -> [30475, 2048]
+    label = matcontent['labels'].astype(int).squeeze() - 1             ### [30475, 1] -> [30475] content: label(1,50)->(0,49)
+    
     matcontent = sio.loadmat(dataroot + "/" + dataset + "/" + class_embedding + "_splits.mat")
-    # numpy array index starts from 0, matlab starts from 1
-    trainval_loc = matcontent['trainval_loc'].squeeze() - 1
-    test_seen_loc = matcontent['test_seen_loc'].squeeze() - 1
-    test_unseen_loc = matcontent['test_unseen_loc'].squeeze() - 1
+    # numpy array index starts from 0, matlab starts from 1            ### the same process as used in label.
+    trainval_loc = matcontent['trainval_loc'].squeeze() - 1            ### len=19832  content:(1,30475)
+    test_seen_loc = matcontent['test_seen_loc'].squeeze() - 1          ### len=4958
+    test_unseen_loc = matcontent['test_unseen_loc'].squeeze() - 1      ### len=5685
   
-    attribute = matcontent['att'].T 
+    attribute = matcontent['att'].T                                    ### [85, 50] -> [50, 85]
 
     x = feature[trainval_loc] # train_features
     train_label = label[trainval_loc].astype(int)  # train_label
@@ -94,36 +95,36 @@ def main():
     
     
     # train set
-    train_features=torch.from_numpy(x)
+    train_features=torch.from_numpy(x)                                 ### [19832, 2048]
     print(train_features.shape)
 
-    train_label=torch.from_numpy(train_label).unsqueeze(1)
+    train_label=torch.from_numpy(train_label).unsqueeze(1)             ### [19832, 1]
     print(train_label.shape)
 
     # attributes
-    all_attributes=np.array(attribute)
+    all_attributes=np.array(attribute)                                 ### [50, 85]
     print(all_attributes.shape)
     
-    attributes = torch.from_numpy(attribute)
+    attributes = torch.from_numpy(attribute)                           ### [50, 85]
     # test set
 
-    test_features=torch.from_numpy(x_test)
+    test_features=torch.from_numpy(x_test)                             ### [4958, 2048]
     print(test_features.shape)
 
-    test_label=torch.from_numpy(test_label).unsqueeze(1)
+    test_label=torch.from_numpy(test_label).unsqueeze(1)               ### [5685, 2048]
     print(test_label.shape)
 
-    testclasses_id = np.array(test_id)
+    testclasses_id = np.array(test_id)                                 ### [?]
     print(testclasses_id.shape)
 
-    test_attributes = torch.from_numpy(att_pro).float()
+    test_attributes = torch.from_numpy(att_pro).float()                ### [?, 85]
     print(test_attributes.shape)
 
     
-    test_seen_features = torch.from_numpy(x_test_seen)
+    test_seen_features = torch.from_numpy(x_test_seen)                 ### [4958, 2048]
     print(test_seen_features.shape)
     
-    test_seen_label = torch.from_numpy(test_label_seen)
+    test_seen_label = torch.from_numpy(test_label_seen)                ### [4958]
     
     
 
