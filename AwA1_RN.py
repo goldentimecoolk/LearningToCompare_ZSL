@@ -167,7 +167,7 @@ def main():
 
         batch_features = Variable(batch_features).cuda(GPU).float()  # 32*1024
         sample_features = attribute_network(Variable(sample_attributes).cuda(GPU)) #k*312
-
+        ### map labels to attributes, inference from attributes to features through attribute_network.
 
         sample_features_ext = sample_features.unsqueeze(0).repeat(BATCH_SIZE,1,1)
         batch_features_ext = batch_features.unsqueeze(0).repeat(class_num,1,1)
@@ -178,6 +178,7 @@ def main():
         relation_pairs = torch.cat((sample_features_ext,batch_features_ext),2).view(-1,4096)
         # pdb.set_trace()
         relations = relation_network(relation_pairs).view(-1,class_num)
+        ### reference from features to relations, through relation_network.
         #print(relations)
 
         # re-build batch_labels according to sample_labels
